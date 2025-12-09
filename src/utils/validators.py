@@ -3,7 +3,42 @@
 This module provides reusable validation functions for input data.
 """
 
-from typing import Any, Optional
+from typing import Any, List, Optional
+
+
+# List of valid dog breeds (AKC recognized breeds + common mixed breed terms)
+VALID_DOG_BREEDS: List[str] = [
+    # Sporting Group
+    "labrador retriever", "golden retriever", "german shorthaired pointer",
+    "brittany", "cocker spaniel", "english springer spaniel", "vizsla",
+    "weimaraner", "irish setter", "english setter", "pointer",
+    # Hound Group
+    "beagle", "dachshund", "basset hound", "bloodhound", "greyhound",
+    "whippet", "afghan hound", "rhodesian ridgeback", "basenji", "coonhound",
+    # Working Group
+    "rottweiler", "boxer", "doberman pinscher", "great dane", "mastiff",
+    "siberian husky", "alaskan malamute", "saint bernard", "bernese mountain dog",
+    "newfoundland", "samoyed", "akita", "portuguese water dog",
+    # Terrier Group
+    "bull terrier", "staffordshire bull terrier", "american staffordshire terrier",
+    "west highland white terrier", "scottish terrier", "jack russell terrier",
+    "airedale terrier", "miniature schnauzer", "yorkshire terrier", "cairn terrier",
+    # Toy Group
+    "chihuahua", "pomeranian", "pug", "shih tzu", "maltese", "pekingese",
+    "cavalier king charles spaniel", "papillon", "havanese", "toy poodle",
+    # Non-Sporting Group
+    "bulldog", "french bulldog", "poodle", "boston terrier", "bichon frise",
+    "dalmatian", "chow chow", "shiba inu", "lhasa apso", "chinese shar-pei",
+    # Herding Group
+    "german shepherd", "australian shepherd", "border collie", "pembroke welsh corgi",
+    "cardigan welsh corgi", "shetland sheepdog", "collie", "belgian malinois",
+    "australian cattle dog", "old english sheepdog",
+    # Common variations and mixed breeds
+    "labrador", "lab", "golden", "german shepherd dog", "gsd", "pit bull",
+    "pitbull", "husky", "corgi", "poodle", "doodle", "goldendoodle",
+    "labradoodle", "cockapoo", "schnoodle", "puggle", "mixed", "mixed breed",
+    "mutt",
+]
 
 
 def validate_required(value: Any, field_name: str) -> Optional[str]:
@@ -130,5 +165,39 @@ def validate_enum_value(
             return f"{field_name} must be one of: {', '.join(str(v) for v in allowed_values)}"
     elif value not in allowed_values:
         return f"{field_name} must be one of: {', '.join(str(v) for v in allowed_values)}"
+
+    return None
+
+
+def validate_dog_breed(breed: Any, species: str) -> Optional[str]:
+    """Validate that a breed is a real dog breed when species is 'dog'.
+
+    Args:
+        breed: The breed value to validate.
+        species: The species of the pet.
+
+    Returns:
+        str: Error message if validation fails, None if valid.
+
+    Example:
+        >>> validate_dog_breed("unicorn", "dog")
+        "breed 'unicorn' is not a recognized dog breed"
+        >>> validate_dog_breed("labrador", "dog")
+        None
+        >>> validate_dog_breed("tabby", "cat")
+        None
+    """
+    if breed is None:
+        return None  # Breed is optional
+
+    if not isinstance(species, str) or species.lower() != "dog":
+        return None  # Only validate breeds for dogs
+
+    if not isinstance(breed, str):
+        return "breed must be a string"
+
+    lower_breed = breed.lower().strip()
+    if lower_breed not in VALID_DOG_BREEDS:
+        return f"breed '{breed}' is not a recognized dog breed"
 
     return None

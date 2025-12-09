@@ -79,6 +79,31 @@ class TestPetModel:
         pet = Pet(name="Test", species=species)
         assert pet.species == species
 
+    def test_create_dog_with_valid_breed(self):
+        """Test creating a dog with a recognized breed."""
+        pet = Pet(name="Buddy", species="dog", breed="Labrador Retriever")
+        assert pet.breed == "Labrador Retriever"
+
+    def test_create_dog_with_invalid_breed(self):
+        """Test that invalid dog breed raises ValueError."""
+        with pytest.raises(ValueError, match="not a recognized dog breed"):
+            Pet(name="Buddy", species="dog", breed="Unicorn Dog")
+
+    def test_create_dog_breed_case_insensitive(self):
+        """Test that breed validation is case-insensitive."""
+        pet = Pet(name="Buddy", species="dog", breed="GOLDEN RETRIEVER")
+        assert pet.breed == "GOLDEN RETRIEVER"
+
+    def test_create_cat_with_any_breed(self):
+        """Test that cats can have any breed (no validation)."""
+        pet = Pet(name="Whiskers", species="cat", breed="Tabby")
+        assert pet.breed == "Tabby"
+
+    def test_create_dog_without_breed_is_valid(self):
+        """Test that dogs without a breed are still valid."""
+        pet = Pet(name="Buddy", species="dog")
+        assert pet.breed is None
+
 
 class TestPetAPI:
     """Tests for the Pet API endpoints."""
@@ -161,3 +186,32 @@ class TestPetAPI:
         response = delete_pet(999)
         assert response["success"] is False
         assert response["error"]["code"] == "NOT_FOUND"
+
+    def test_create_dog_with_valid_breed_via_api(self):
+        """Test creating a dog with a valid breed via API."""
+        response = create_pet({
+            "name": "Max",
+            "species": "dog",
+            "breed": "German Shepherd"
+        })
+        assert response["success"] is True
+        assert response["data"]["breed"] == "German Shepherd"
+
+    def test_create_dog_with_invalid_breed_via_api(self):
+        """Test that creating a dog with invalid breed fails via API."""
+        response = create_pet({
+            "name": "Max",
+            "species": "dog",
+            "breed": "Flying Dragon Dog"
+        })
+        assert response["success"] is False
+        assert response["error"]["code"] == "VALIDATION_ERROR"
+        assert "not a recognized dog breed" in response["error"]["message"]
+
+    def test_update_dog_with_invalid_breed_via_api(self):
+        """Test that updating a dog with invalid breed fails via API."""
+        create_pet({"name": "Buddy", "species": "dog", "breed": "Labrador"})
+        response = update_pet(1, {"breed": "Imaginary Breed"})
+        assert response["success"] is False
+        assert response["error"]["code"] == "VALIDATION_ERROR"
+        assert "not a recognized dog breed" in response["error"]["message"]

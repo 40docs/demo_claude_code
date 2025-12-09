@@ -5,7 +5,7 @@ This module provides RESTful API handlers for pet operations.
 
 from typing import Optional
 from src.models.pet import Pet, PetStatus, VALID_SPECIES
-from src.utils.validators import validate_required, validate_string_length
+from src.utils.validators import validate_required, validate_string_length, validate_dog_breed
 
 
 # In-memory storage for demo purposes
@@ -105,6 +105,11 @@ def create_pet(data: dict) -> dict:
             "VALIDATION_ERROR",
             f"Invalid species. Must be one of: {', '.join(VALID_SPECIES)}",
         )
+
+    # Validate dog breed if species is dog
+    breed_error = validate_dog_breed(data.get("breed"), data["species"])
+    if breed_error:
+        return _error_response("VALIDATION_ERROR", breed_error)
 
     try:
         pet = Pet.from_dict(data)

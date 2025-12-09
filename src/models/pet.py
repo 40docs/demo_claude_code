@@ -8,6 +8,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
+from src.utils.validators import validate_dog_breed
+
 
 class PetStatus(Enum):
     """Enumeration of possible pet adoption statuses."""
@@ -71,6 +73,11 @@ class Pet:
 
         if self.age_years is not None and self.age_years < 0:
             raise ValueError("Age cannot be negative")
+
+        # Validate dog breed if species is dog
+        breed_error = validate_dog_breed(self.breed, self.species)
+        if breed_error:
+            raise ValueError(breed_error)
 
     def to_dict(self) -> dict:
         """Convert pet to dictionary representation.
