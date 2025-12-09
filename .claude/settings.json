@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write(src/**)",
+      "Write(tests/**)",
+      "Bash(pytest:*)",
+      "Bash(python:*)",
+      "Bash(pip install:*)"
+    ],
+    "deny": [
+      "Write(.env*)",
+      "Write(*.secret)",
+      "Bash(rm -rf:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}
