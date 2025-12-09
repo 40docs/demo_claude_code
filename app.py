@@ -1,6 +1,6 @@
 """Simple Flask web server for testing the Pet Adoption Center API."""
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from src.api.pets import create_pet, list_pets, get_pet, update_pet, delete_pet
 
 app = Flask(__name__)
@@ -8,6 +8,11 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
+    return render_template("index.html")
+
+
+@app.route("/api")
+def api_info():
     return jsonify({
         "message": "Pet Adoption Center API",
         "endpoints": {
