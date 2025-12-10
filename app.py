@@ -57,4 +57,4 @@ def handle_delete_pet(pet_id):
 if __name__ == "__main__":
     print("Starting Pet Adoption Center API...")
     print("Open http://localhost:5000 in your browser")
-    app.run(debug=True, port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5000)
